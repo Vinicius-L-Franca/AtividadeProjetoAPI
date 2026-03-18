@@ -1,0 +1,428 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "CRUD Users API",
+    "version": "1.0.0",
+    "description": "API para gerenciamento de usuários com operações CRUD"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000",
+      "description": "Servidor local"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Users",
+      "description": "Operações de gerenciamento de usuários"
+    }
+  ],
+  "paths": {
+    "/api/users": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Listar todos os usuários",
+        "description": "Retorna a lista completa de usuários cadastrados.",
+        "operationId": "getUsers",
+        "responses": {
+          "200": {
+            "description": "Lista de usuários retornada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                },
+                "example": [
+                  {
+                    "id": 1,
+                    "name": "João Silva",
+                    "age": 30,
+                    "email": "joao@example.com"
+                  },
+                  {
+                    "id": 2,
+                    "name": "Maria Souza",
+                    "age": 25,
+                    "email": "maria@example.com"
+                  }
+                ]
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "post": {
+        "tags": ["Users"],
+        "summary": "Criar novo usuário",
+        "description": "Cadastra um novo usuário com nome, idade e e-mail.",
+        "operationId": "createUser",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserInput"
+              },
+              "example": {
+                "name": "Carlos Ferreira",
+                "age": 28,
+                "email": "carlos@example.com"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuário criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                },
+                "example": {
+                  "id": 3,
+                  "name": "Carlos Ferreira",
+                  "age": 28,
+                  "email": "carlos@example.com"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos ou campos obrigatórios ausentes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Field 'email' is required"
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "put": {
+        "tags": ["Users"],
+        "summary": "Atualizar usuário completo",
+        "description": "Substitui todos os dados de um usuário existente. Todos os campos são obrigatórios.",
+        "operationId": "putUser",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserInput"
+              },
+              "example": {
+                "name": "Carlos Ferreira Atualizado",
+                "age": 29,
+                "email": "carlos.novo@example.com"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário atualizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                },
+                "example": {
+                  "id": 3,
+                  "name": "Carlos Ferreira Atualizado",
+                  "age": 29,
+                  "email": "carlos.novo@example.com"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos ou campos obrigatórios ausentes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Field 'name' is required"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/UserNotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Users"],
+        "summary": "Atualizar usuário parcialmente",
+        "description": "Atualiza apenas os campos fornecidos de um usuário existente.",
+        "operationId": "patchUser",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserPartial"
+              },
+              "example": {
+                "age": 31
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário atualizado parcialmente com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                },
+                "example": {
+                  "id": 3,
+                  "name": "Carlos Ferreira",
+                  "age": 31,
+                  "email": "carlos@example.com"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dados inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Invalid value for field 'age'"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/UserNotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Users"],
+        "summary": "Deletar usuário",
+        "description": "Remove permanentemente um usuário pelo seu ID.",
+        "operationId": "deleteUser",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Id"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Usuário deletado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "message": "User deleted successfully"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ID não fornecido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Missing 'id' parameter"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/UserNotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Identificador único do usuário",
+            "example": 1
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome do usuário",
+            "minLength": 1,
+            "maxLength": 100,
+            "example": "João Silva"
+          },
+          "age": {
+            "type": "integer",
+            "description": "Idade do usuário",
+            "minimum": 1,
+            "maximum": 150,
+            "example": 30
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "E-mail do usuário",
+            "example": "joao@example.com"
+          }
+        },
+        "required": ["id", "name", "age", "email"]
+      },
+      "UserInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nome do usuário",
+            "minLength": 1,
+            "maxLength": 100,
+            "example": "João Silva"
+          },
+          "age": {
+            "type": "integer",
+            "description": "Idade do usuário",
+            "minimum": 1,
+            "maximum": 150,
+            "example": 30
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "E-mail do usuário",
+            "example": "joao@example.com"
+          }
+        },
+        "required": ["name", "age", "email"]
+      },
+      "UserPartial": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nome do usuário",
+            "minLength": 1,
+            "maxLength": 100,
+            "example": "João Silva"
+          },
+          "age": {
+            "type": "integer",
+            "description": "Idade do usuário",
+            "minimum": 1,
+            "maximum": 150,
+            "example": 30
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "E-mail do usuário",
+            "example": "joao@example.com"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Mensagem de erro",
+            "example": "User not found"
+          }
+        },
+        "required": ["error"]
+      }
+    },
+    "parameters": {
+      "Id": {
+        "name": "id",
+        "in": "query",
+        "required": true,
+        "description": "ID do usuário",
+        "schema": {
+          "type": "integer",
+          "example": 1
+        }
+      }
+    },
+    "responses": {
+      "UserNotFound": {
+        "description": "Usuário não encontrado",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "error": "User not found"
+            }
+          }
+        }
+      },
+      "InternalError": {
+        "description": "Erro interno do servidor",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "error": "Internal server error"
+            }
+          }
+        }
+      }
+    }
+  }
+}
