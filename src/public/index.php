@@ -1,31 +1,50 @@
 <?php
 
-require_once __DIR__ . '/../config/config.php';
+$requestPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 
-// ── CORS ─────────────────────────────────────────
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+$uri = '/' . ltrim($requestPath, '/');
+$uri = rtrim($uri, '/');
+$uri = $uri === '' ? '/' : $uri;
 
-in_array($origin, $allowedOrigins) ?
-    header("Access-Control-Allow-Origin: $origin") : null;
-header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
-
-// ── Preflight ────────────────────────────────────
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(204);
-    exit;
+$staticFile = __DIR__ . '/' . ltrim($requestPath, '/');
+if ($requestPath !== '/' && is_file($staticFile)) {
+    return false;
 }
 
-// ── Roteamento ───────────────────────────────────
-$uri = strtok($_SERVER['REQUEST_URI'], '?');
-
 match ($uri) {
-    '/api/users' => require __DIR__ . '/../src/api.php',
-    default      => notFound(),
+    '/api/users'    => require __DIR__ . '/../src/api.php',
+    '/docs'         => serveDocs(),
+    '/openapi'      => serveOpenApi(),
+    '/openapi.json' => serveOpenApi(),
+    default         => notFound(),
 };
+
+function serveDocs(): void
+{
+    $file = __DIR__ . '/../views/docs.html';
+    if (!file_exists($file)) {
+        http_response_code(404);
+        echo json_encode(['error' => 'Documentation file not found']);
+        return;
+    }
+    header('Content-Type: text/html; charset=utf-8');
+    echo file_get_contents($file);
+}
+
+function serveOpenApi(): void
+{
+    $file = __DIR__ . '/../openapi.json';
+    if (!file_exists($file)) {
+        http_response_code(404);
+        echo json_encode(['error' => 'OpenAPI spec not found']);
+        return;
+    }
+    header('Content-Type: application/json; charset=utf-8');
+    echo file_get_contents($file);
+}
 
 function notFound(): void
 {
     http_response_code(404);
-    echo json_encode(['error' => 'Not found']);
+    echo json_encode(['error' => 'Route not found']);
 }

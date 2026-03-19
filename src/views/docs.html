@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>API Docs - CRUD Users</title>
+  <!-- CSS do Swagger UI (arquivo local) -->
+  <link rel="stylesheet" href="./swagger-ui/swagger-ui.css" />
+</head>
+
+<body>
+  <!-- Aqui vai renderizar o Swagger UI -->
+  <div id="swagger-ui"></div>
+
+  <!-- JS do Swagger UI (arquivo local) -->
+  <script src="./swagger-ui/swagger-ui-bundle.js"></script>
+  <script src="./swagger-ui/swagger-ui-standalone-preset.js"></script>
+  
+  <script>
+    window.onload = () => {
+      // Inicializa o Swagger UI apontando para o openapi.json
+      window.ui = SwaggerUIBundle({
+        url: "./openapi",            // URL do arquivo JSON
+        dom_id: "#swagger-ui",       // Onde renderizar
+        deepLinking: true,           // URLs com âncoras
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        layout: "StandaloneLayout"
+      });
+    };
+  </script>
+</body>
+</html>

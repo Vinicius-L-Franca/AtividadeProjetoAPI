@@ -1,0 +1,23 @@
+{
+  "name": "projetophpapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Vinicius-L-Franca/AtividadeProjetoAPI.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Vinicius-L-Franca/AtividadeProjetoAPI/issues"
+  },
+  "homepage": "https://github.com/Vinicius-L-Franca/AtividadeProjetoAPI#readme",
+  "dependencies": {
+    "swagger-ui-dist": "^5.32.1"
+  }
+}
